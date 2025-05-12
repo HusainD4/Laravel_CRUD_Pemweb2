@@ -1,5 +1,11 @@
 # UTS Pemrograman Website Laravel
 
+
+
+**Nama:** Husain Mulyansyah  
+**NIM:** 23090078
+
+
 ## 1. Proses Pembuatan Project Laravel
 Langkah pertama dalam pembuatan proyek Laravel adalah menginisialisasi proyek baru. Berikut adalah tampilan saat pembuatan proyek:
 
