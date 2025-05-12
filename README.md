@@ -62,6 +62,3 @@ Dengan mengikuti langkah-langkah di atas, Anda dapat membuat aplikasi Laravel ya
 4. Jalankan `php artisan migrate` untuk melakukan migrasi.
 5. Jalankan server menggunakan perintah `php artisan serve`.
 
-### License:
-This project is open source and available under the [MIT License](LICENSE).
-
