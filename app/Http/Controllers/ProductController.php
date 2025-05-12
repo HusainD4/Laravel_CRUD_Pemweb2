@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -119,13 +118,19 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product deleted successfully!');
     }
 
+    // Menampilkan detail produk
     public function show($id)
     {
         // Fetch the product by its ID
         $product = Product::findOrFail($id);
 
-        // Return the view for showing the product's details
-        return view('web.products.show', compact('product'));
-    }
+        // Fetch related products (those in the same category but excluding the current product)
+        $relatedProducts = Product::where('category_id', $product->category_id)
+                                   ->where('id', '!=', $product->id) // Exclude the current product
+                                   ->take(4) // Limit the number of related products shown
+                                   ->get();
 
+        // Return the view for showing the product's details and pass the related products
+        return view('web.products.show', compact('product', 'relatedProducts'));
+    }
 }

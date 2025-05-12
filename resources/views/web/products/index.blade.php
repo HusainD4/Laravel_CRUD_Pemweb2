@@ -3,6 +3,72 @@
 @section('title', 'Product List')
 
 @section('content')
+<style>
+    /* FluxUI Inspired Button Styles */
+    .flux-btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s ease;
+    }
+
+    .flux-btn:hover,
+    .flux-btn:focus {
+        transform: scale(1.05);
+    }
+
+    .flux-btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+    }
+
+    .flux-btn-primary:hover,
+    .flux-btn-primary:focus {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .flux-btn-warning {
+        background-color: #ffc107;
+        color: white;
+        border: 1px solid #ffc107;
+    }
+
+    .flux-btn-warning:hover,
+    .flux-btn-warning:focus {
+        background-color: #e0a800;
+        border-color: #e0a800;
+    }
+
+    .flux-btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: 1px solid #dc3545;
+    }
+
+    .flux-btn-danger:hover,
+    .flux-btn-danger:focus {
+        background-color: #c82333;
+        border-color: #c82333;
+    }
+
+    .flux-btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+    }
+
+    .flux-btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+</style>
+
 <div class="container">
     <h1 class="my-4 text-primary">Product List</h1>
 
@@ -13,9 +79,12 @@
         </div>
     @endif
 
-    <a href="{{ route('products.create') }}" class="btn btn-primary mb-4">Add New Product</a>
+    <div class="mb-4">
+        <!-- Add New Product Button -->
+        <a href="{{ route('products.create') }}" class="flux-btn flux-btn-primary flux-btn-lg">Add New Product</a>
+    </div>
 
-    {{-- Daftar produk --}}
+    {{-- Product List --}}
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -40,11 +109,14 @@
                     <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>
                     <td>{{ $product->category->name ?? '-' }}</td>
                     <td>
-                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <!-- Edit Button -->
+                        <a href="{{ route('products.edit', $product->id) }}" class="flux-btn flux-btn-warning btn-sm">Edit</a>
+
+                        <!-- Delete Button -->
                         <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm"
+                            <button type="submit" class="flux-btn flux-btn-danger btn-sm"
                                 onclick="return confirm('Are you sure you want to delete this product?')">
                                 Delete
                             </button>
@@ -64,4 +136,5 @@
         {{ $products->links() }}
     </div>
 </div>
+
 @endsection

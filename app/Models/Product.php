@@ -9,8 +9,10 @@ class Product extends Model
 {
     use HasFactory;
 
+    // Field yang dapat diisi melalui mass-assignment
     protected $fillable = [
         'name',     
+        'slug',     // Tambahkan slug
         'price',      
         'description',
         'category_id', 
@@ -23,6 +25,15 @@ class Product extends Model
      */
     public function category()
     {
-        return $this->belongsTo(Category::class); // Relasi produk dengan kategori
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Override route key untuk menggunakan slug.
+     * Ini memungkinkan penggunaan {product:slug} di route.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

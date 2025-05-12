@@ -67,6 +67,17 @@
             padding: 20px 0;
             text-align: center;
         }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+        }
     </style>
 </head>
 
@@ -91,6 +102,17 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('products.index') }}">Products</a>
+                        </li>
+                        <!-- Cart Link -->
+                        <li class="nav-item position-relative">
+                            <a class="nav-link" href="{{ route('cart.index') }}">
+                                <i class="bi bi-cart" style="font-size: 1.5rem;"></i>
+                                @if(session()->has('cart') && count(session()->get('cart')) > 0)
+                                    <span class="cart-count">{{ count(session()->get('cart')) }}</span>
+                                @else
+                                    <span class="cart-count">0</span>
+                                @endif
+                            </a>
                         </li>
                     </ul>
                 </div>
