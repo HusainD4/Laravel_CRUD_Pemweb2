@@ -23,4 +23,5 @@
         </div>
         @fluxScripts
     </body>
+    
 </html>
