@@ -18,19 +18,30 @@ class CategoriesController extends Controller
     // Menampilkan form tambah kategori
     public function create()
     {
+        // Jika perlu, Anda bisa menambahkan otorisasi di sini
+        // $this->authorize('create', Category::class);
+
         return view('web.categories.create');
     }
 
     // Menyimpan kategori baru
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
             'name' => 'required|max:255|unique:categories,name',
         ]);
 
+        // Membuat slug yang unik jika ada kategori yang sudah memiliki nama yang sama
+        $slug = Str::slug($request->name);
+        if (Category::where('slug', $slug)->exists()) {
+            $slug = $slug . '-' . time(); // Menambahkan angka untuk menghindari duplikasi slug
+        }
+
+        // Menyimpan kategori baru
         Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => $slug,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
@@ -39,6 +50,7 @@ class CategoriesController extends Controller
     // Menampilkan detail kategori (opsional, bisa dihapus jika tidak digunakan)
     public function show($id)
     {
+        // Jika belum diperlukan, Anda bisa menghapus atau mengembangkannya
         $category = Category::findOrFail($id);
         return view('web.categories.show', compact('category'));
     }
@@ -47,12 +59,17 @@ class CategoriesController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
+
+        // Jika perlu, Anda bisa menambahkan otorisasi di sini
+        // $this->authorize('update', $category);
+
         return view('web.categories.edit', compact('category'));
     }
 
     // Menyimpan perubahan kategori
     public function update(Request $request, $id)
     {
+        // Validasi input
         $request->validate([
             'name' => 'required|max:255|unique:categories,name,' . $id,
         ]);
@@ -69,7 +86,12 @@ class CategoriesController extends Controller
     // Hapus kategori
     public function destroy($id)
     {
+        // Mengecek apakah kategori ada
         $category = Category::findOrFail($id);
+        
+        // Jika perlu, Anda bisa menambahkan otorisasi di sini
+        // $this->authorize('delete', $category);
+
         $category->delete();
 
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');

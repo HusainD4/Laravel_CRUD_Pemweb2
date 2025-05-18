@@ -5,132 +5,103 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
-    // Menampilkan daftar produk dengan paginasi
-    public function index()
+    public function index(): View
     {
-        // Ganti get() dengan paginate()
-        $products = Product::with('category')->paginate(8); // 8 produk per halaman
+        $products = Product::with('category')->paginate(8);
         return view('web.products.index', compact('products'));
     }
 
-    // Menampilkan form input produk
-    public function create()
+    public function create(): View
     {
         $categories = Category::all();
         return view('web.products.create', compact('categories'));
     }
 
-    // Menyimpan produk baru
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048', // Optional image field
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
-        // Handling file upload
-        $imagePath = null;
         if ($request->hasFile('image')) {
-            // Store image in public directory
-            $imagePath = $request->file('image')->store('product_images', 'public');
+            $validated['image'] = $request->file('image')->store('product_images', 'public');
         }
 
-        // Create product record in database
-        Product::create([
-            'name' => $request->name,
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'image' => $imagePath,  // Save image path
-        ]);
-
-        // Redirect back to the product index with a success message
+        Product::create($validated);
         return redirect()->route('products.index')->with('success', 'Product created successfully!');
     }
 
-    // Menampilkan form edit produk
-    public function edit($id)
+    public function edit(int $id): View
     {
-        // Fetch product by ID
         $product = Product::findOrFail($id);
-        // Fetch all categories for the dropdown
         $categories = Category::all();
         return view('web.products.edit', compact('product', 'categories'));
     }
 
-    // Update produk
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): RedirectResponse
     {
-        // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048', // Optional image field
+            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
 
-        // Fetch the product to update
         $product = Product::findOrFail($id);
-
-        // Check if there is a new image and delete the old one if necessary
-        $imagePath = $product->image;
+        
         if ($request->hasFile('image')) {
-            // Delete old image from storage if it exists
-            if ($product->image && Storage::exists('public/' . $product->image)) {
-                Storage::delete('public/' . $product->image);
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
             }
-            // Store the new image
-            $imagePath = $request->file('image')->store('product_images', 'public');
+            $validated['image'] = $request->file('image')->store('product_images', 'public');
         }
 
-        // Update the product with new data
-        $product->update([
-            'name' => $request->name,
-            'price' => $request->price,
-            'category_id' => $request->category_id,
-            'image' => $imagePath,  // Update the image path
-        ]);
+        $product->update($validated);
 
-        // Redirect to the product index page with success message
         return redirect()->route('products.index')->with('success', 'Product updated successfully!');
     }
 
-    // Hapus produk
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
-        // Fetch product by ID
         $product = Product::findOrFail($id);
 
-        // Delete the image file if it exists
-        if ($product->image && Storage::exists('public/' . $product->image)) {
-            Storage::delete('public/' . $product->image);
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
         }
 
-        // Delete the product from database
         $product->delete();
 
-        // Redirect back with success message
         return redirect()->route('products.index')->with('success', 'Product deleted successfully!');
     }
 
-    // Menampilkan detail produk
-    public function show($id)
+    // Jika di route kamu menggunakan slug, ubah parameter menjadi string $slug dan cari produk berdasarkan slug
+    public function show(string $slug): View
     {
-        // Fetch the product by its ID
-        $product = Product::findOrFail($id);
+        $product = Product::where('slug', $slug)->firstOrFail();
 
-        // Fetch related products (those in the same category but excluding the current product)
         $relatedProducts = Product::where('category_id', $product->category_id)
-                                   ->where('id', '!=', $product->id) // Exclude the current product
-                                   ->take(4) // Limit the number of related products shown
+                                   ->where('id', '!=', $product->id)
+                                   ->take(4)
                                    ->get();
 
-        // Return the view for showing the product's details and pass the related products
         return view('web.products.show', compact('product', 'relatedProducts'));
+    }
+
+    // Tambahkan method dashboard sesuai route dashboard
+    public function dashboard(): View
+    {
+        // Contoh ambil semua produk paginasi
+        $products = Product::paginate(10);
+
+        // Bisa buat view dashboard di resources/views/dashboard.blade.php
+        return view('dashboard', compact('products'));
     }
 }

@@ -61,6 +61,7 @@
 
     .product-rating {
         color: #ffc107;
+        font-size: 1.1rem;
     }
 
     .btn-buy {
@@ -85,13 +86,8 @@
         color: #6c757d;
     }
 
-    /* Add custom spacing and adjustments */
     .product-card-container {
         margin-top: 50px;
-    }
-
-    .product-rating-star {
-        font-size: 1.1rem;
     }
 </style>
 
@@ -114,17 +110,18 @@
                         <div class="product-title">{{ $product->name }}</div>
                         <div class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
 
-                        <!-- Rating Section -->
                         <div class="product-rating mb-2">
-                            ★★★★☆  {{-- This could be dynamic if you have a rating system --}}
+                            ★★★★☆ {{-- Placeholder rating --}}
                         </div>
+
                         <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-primary btn-sm btn-buy">Lihat Detail</a>
-                        
-                        <!-- Add to Cart Form -->
+
                         <form action="{{ route('cart.add', $product->id) }}" method="POST" class="mt-2">
                             @csrf
-                            <button class="btn btn-primary btn-sm btn-buy" {{ $product->stock <= 0 ? 'enable' : '' }}>
-                                Tambah ke Keranjang
+                            <button 
+                                class="btn btn-primary btn-sm btn-buy" 
+                                {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                                {{ $product->stock <= 0 ? 'Stok Habis' : 'Tambah ke Keranjang' }}
                             </button>
                         </form>
                     </div>
@@ -137,10 +134,8 @@
         @endforelse
     </div>
 
-    {{-- Pagination --}}
     <div class="d-flex justify-content-center mt-4">
         {{ $products->links() }}
     </div>
 </div>
-
 @endsection

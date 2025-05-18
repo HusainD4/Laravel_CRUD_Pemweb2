@@ -1,8 +1,5 @@
-@extends('layouts.app')
+<x-layouts.app title="Edit Product">
 
-@section('title', 'Edit Product')
-
-@section('content')
 <style>
     /* FluxUI Inspired Styles */
     .flux-btn {
@@ -178,4 +175,5 @@
         <button type="submit" class="flux-btn flux-btn-primary">Update Product</button>
     </form>
 </div>
-@endsection
+
+</x-layouts.app>

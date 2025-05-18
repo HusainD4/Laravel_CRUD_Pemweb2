@@ -9,19 +9,21 @@ class Product extends Model
 {
     use HasFactory;
 
-    // Field yang dapat diisi melalui mass-assignment
+    /**
+     * Atribut yang bisa diisi (mass assignable).
+     */
     protected $fillable = [
-        'name',     
-        'slug',     // Tambahkan slug
-        'price',      
+        'name',
+        'slug',
+        'price',
         'description',
-        'category_id', 
-        'image',       
+        'category_id',
+        'image',
     ];
 
     /**
      * Relasi ke model Category.
-     * Setiap produk hanya memiliki satu kategori (belongsTo).
+     * Setiap produk dimiliki oleh satu kategori.
      */
     public function category()
     {
@@ -29,11 +31,17 @@ class Product extends Model
     }
 
     /**
-     * Override route key untuk menggunakan slug.
-     * Ini memungkinkan penggunaan {product:slug} di route.
+     * Menggunakan 'slug' sebagai pengganti 'id' pada route model binding.
      */
     public function getRouteKeyName()
     {
         return 'slug';
     }
+
+    /**
+     * Cast atribut ke tipe data yang sesuai (opsional, tapi direkomendasikan).
+     */
+    protected $casts = [
+        'price' => 'integer', // atau 'float' jika perlu desimal
+    ];
 }

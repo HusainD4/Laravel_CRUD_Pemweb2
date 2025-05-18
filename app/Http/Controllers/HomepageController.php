@@ -17,7 +17,7 @@ class HomepageController extends Controller
         $categories = Category::all();
 
         // Mengambil produk terbaru dan menggunakan paginasi (8 produk per halaman)
-        $products = Product::latest()->paginate(8); // Mendukung links() di view untuk paginasi
+        $products = Product::latest()->paginate(8); 
 
         // Mengirim data ke view
         return view('web.homepage', compact('title', 'categories', 'products'));
